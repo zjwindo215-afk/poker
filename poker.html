@@ -260,8 +260,27 @@ function startNewHand() {
 // --- UI 渲染 ---
 function renderCard(card, isHidden = false) {
     if (isHidden) return `<div class="card back"></div>`;
-    const colorClass = card.suit.isRed ? 'red' : 'black';
-    return `<div class="card ${colorClass}">
+    
+    // 【核心修改 1】：根据具体花色符号，精准区分四种不同的颜色
+    let customColor = "";
+    if (card.suit.char === '♠') {
+        customColor = "#1e3a8a"; // 黑桃：改成亮眼的深蓝色
+    } else if (card.suit.char === '♣') {
+        customColor = "#16a34a"; // 梅花：改成翠绿色
+    } else if (card.suit.char === '♥') {
+        customColor = "#dc2626"; // 红桃：好看的鲜红色
+    } else if (card.suit.char === '♦') {
+        customColor = "#ea580c"; // 方块：亮橘红色
+    }
+
+    // 【核心修改 2】：成牌高亮判断（如果这局结束了，且这张牌在最强组合里，加上金光边框和微微放大）
+    let highlightStyle = "";
+    if (gameState.bestCardsIds && gameState.bestCardsIds.has(card.id)) {
+        highlightStyle = "border: 3px solid #ffd700; box-shadow: 0 0 15px #ffd700; transform: scale(1.05); z-index: 5;";
+    }
+
+    // 【核心修改 3】：把算好的颜色 customColor 和高亮样式用 style 塞进你的标签里
+    return `<div class="card" style="color: ${customColor}; ${highlightStyle}">
         <div>${card.rank}</div>
         <div style="align-self: flex-end;">${card.suit.char}</div>
     </div>`;
